@@ -2,7 +2,6 @@ package com.projeto.emprestimos.repository;
 
 import com.projeto.emprestimos.model.Equipamento;
 import com.projeto.emprestimos.model.TipoEquipamento;
-import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
