@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/equipamentos")
 public class EquipamentoController {
 
-    private EquipamentoService equipamentoService;
+    private final EquipamentoService equipamentoService;
 
     public EquipamentoController(EquipamentoService equipamentoService){
         this.equipamentoService = equipamentoService;
@@ -28,6 +28,17 @@ public class EquipamentoController {
     @GetMapping("/{id}")
     public Equipamento buscar(@PathVariable Long id){
         return equipamentoService.buscar(id);
+    }
+
+    @PutMapping("/{id}")
+    public Equipamento atualizar(@PathVariable Long id, @RequestBody @Valid Equipamento dados){
+        return equipamentoService.atualizar(id, dados);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable Long id){
+        equipamentoService.remover(id);
     }
 
     @PostMapping
