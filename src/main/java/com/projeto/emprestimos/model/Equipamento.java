@@ -1,5 +1,6 @@
 package com.projeto.emprestimos.model;
 
+import com.projeto.emprestimos.exception.ConflitoException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -47,7 +48,7 @@ public class Equipamento {
         return patrimonio;
     }
 
-    public void setPatrimonio() {
+    public void setPatrimonio(String patrimonio) {
         this.patrimonio = patrimonio;
     }
 
@@ -73,5 +74,18 @@ public class Equipamento {
 
     public void setDisponivel(boolean disponivel) {
         this.disponivel = disponivel;
+    }
+
+    //METODOS ==> EMPRESTAR E DEVOLVER EQUIPAMENTO
+
+    public void emprestar(){
+        if(!disponivel){
+            throw new ConflitoException("Equipamento indisponível");
+        }
+        disponivel = false;
+    }
+
+    public void devolver(){
+        disponivel = true;
     }
 }
