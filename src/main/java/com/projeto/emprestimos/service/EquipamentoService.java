@@ -5,25 +5,26 @@ import com.projeto.emprestimos.exception.ConflitoException;
 import com.projeto.emprestimos.exception.NaoEncontradoException;
 import com.projeto.emprestimos.model.Equipamento;
 import com.projeto.emprestimos.model.TipoEquipamento;
+import com.projeto.emprestimos.repository.EmprestimoRepository;
 import com.projeto.emprestimos.repository.EquipamentoRepository;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/equipamentos")
+@Service
 public class EquipamentoService {
 
     //ATRIBUTOS
-    private EquipamentoRepository equipamentoRepository;
+    private final EquipamentoRepository equipamentoRepository;
+    private final EmprestimoRepository emprestimoRepository;
 
     //CONSTRUTOR
-    public EquipamentoService(EquipamentoRepository equipamentoRepository){
+    public EquipamentoService(EquipamentoRepository equipamentoRepository, EmprestimoRepository emprestimoRepository){
         this.equipamentoRepository=equipamentoRepository;
+        this.emprestimoRepository = emprestimoRepository;
     }
 
-    //POSSIVEIS ROTAS
+    //METODOS
     public List<Equipamento> listar (TipoEquipamento tipo, Boolean disponivel){
         if (tipo!=null && disponivel !=null){
             return equipamentoRepository.findByTipoAndDisponivel(tipo, disponivel);
@@ -38,7 +39,7 @@ public class EquipamentoService {
 
     public Equipamento buscar(Long id){
         return equipamentoRepository.findById(id)
-                .orElseThrow( () -> new NaoEncontradoException("Equipamento não encontrado!"));
+                .orElseThrow( () -> new NaoEncontradoException("O Equipamento não foi encontrado!"));
     }
 
     public Equipamento cadastrar(Equipamento equipamento){
@@ -51,6 +52,20 @@ public class EquipamentoService {
         }
     }
 
+    public Equipamento atualizar(Long id, Equipamento dados){
+        Equipamento equipamento = buscar(id);
+        equipamento.setNome(dados.getNome());
+        equipamento.setTipo(dados.getTipo());
+        return equipamentoRepository.save(equipamento);
+    }
+
+    public void remover(Long id){
+        Equipamento equipamento = buscar(id);
+        if (emprestimoRepository.existsByEquipamentoId(id)){
+            throw new ConflitoException("Equipamento já tem um empréstimo registrado.");
+        }
+        equipamentoRepository.delete(equipamento);
+    }
 
 
 }
