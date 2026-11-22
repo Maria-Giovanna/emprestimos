@@ -1,5 +1,6 @@
 package com.projeto.emprestimos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -21,6 +22,14 @@ public class Colaborador {
     private String email;
 
     private String cargo;
+
+    @JsonIgnore
+    @Column(nullable = false)
+    private String senha;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Perfil perfil;
 
     //CONSTRUTOR
     public Colaborador() {
@@ -54,4 +63,10 @@ public class Colaborador {
     public void setCargo(String cargo) {
         this.cargo = cargo;
     }
+
+    public String getSenha(){return senha;}
+    public void setSenha(String senha){this.senha = senha;}
+
+    public Perfil getPerfil(){return perfil;}
+    public void setPerfil(Perfil perfil){this.perfil = perfil;}
 }
