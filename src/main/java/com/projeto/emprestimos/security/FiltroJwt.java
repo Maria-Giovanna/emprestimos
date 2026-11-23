@@ -14,16 +14,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-// o porteiro
+// o porteiro: lê o token do cabeçalho em toda requisição e diz ao Spring quem está entrando
 public class FiltroJwt extends OncePerRequestFilter {
 
     //ATRIBUTOS
     private final TokenService tokenService;
 
+
     //CONSTRUTOR
     public FiltroJwt(TokenService tokenService) {
         this.tokenService = tokenService;
     }
+
 
     //MÉTODOS
     @Override
