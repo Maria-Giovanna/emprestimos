@@ -36,13 +36,13 @@ public class FiltroJwt extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String cabecalho = request.getHeader("Authorization");
 
-        // só tenta ler se veio "Bearer " E alguma coisa depois (o "Bearer " sozinho tem 7 letras)
+        // só tenta ler se veio "Bearer"
         boolean temCabecalho = cabecalho != null;
         boolean comecaComBearer = temCabecalho && cabecalho.startsWith("Bearer ");
         boolean temAlgoDepoisDoBearer = comecaComBearer && cabecalho.length() > 7;
 
         if (temAlgoDepoisDoBearer) {
-            String token = cabecalho.substring(7);   // corta o "Bearer " e fica só o token
+            String token = cabecalho.substring(7);   // corta o "Bearer"
 
             try {
                 Claims dados = tokenService.ler(token);
