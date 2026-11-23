@@ -40,12 +40,11 @@ public class ColaboradorService {
     }
 
     public Colaborador cadastrar(ColaboradorRequest pedido){
-        // R3: e-mail único
+
         if (colaboradorRepository.existsByEmail(pedido.email())) {
             throw new ConflitoException("E-mail já cadastrado");
         }
 
-        // se o admin não escolheu o perfil, a pessoa entra como COLABORADOR
         Perfil perfil = pedido.perfil();
         if (perfil == null) {
             perfil = Perfil.COLABORADOR;
@@ -61,8 +60,6 @@ public class ColaboradorService {
         return colaboradorRepository.save(colaborador);
     }
 
-    // a própria pessoa criando a conta (tela "Criar conta"): o perfil é sempre COLABORADOR.
-    // Monta o mesmo pedido do admin e reaproveita o cadastrar(), com a R3 e o BCrypt
     public Colaborador criarConta(CadastroRequest pedido){
         ColaboradorRequest pedidoComPerfil = new ColaboradorRequest(
                 pedido.nome(),

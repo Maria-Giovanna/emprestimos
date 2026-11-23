@@ -38,12 +38,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public TokenResposta login(@RequestBody @Valid LoginRequest dados) {
-        // confere e-mail e senha com o BCrypt. Errou? AuthenticationException → 401 no TratadorDeErros
+        // confere e-mail e senha
         Authentication autenticacao = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dados.email(), dados.senha())
         );
 
-        // "ROLE_ADMIN" vira "ADMIN" pra ir dentro do token
         String perfilComPrefixo = autenticacao.getAuthorities().iterator().next().getAuthority();
         String perfil = perfilComPrefixo.replace("ROLE_", "");
 
@@ -64,7 +63,6 @@ public class AuthController {
         return new TokenResposta(token);
     }
 
-    // quem sou eu? O front usa pra mostrar nome, e-mail e perfil de quem entrou
     @GetMapping("/eu")
     public Colaborador eu(Authentication autenticacao) {
         return colaboradorService.buscarPorEmail(autenticacao.getName());

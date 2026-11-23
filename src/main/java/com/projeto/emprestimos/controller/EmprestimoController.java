@@ -28,7 +28,6 @@ public class EmprestimoController {
         this.emprestimoService = emprestimoService;
     }
 
-    // o Spring entrega o Authentication que o FiltroJwt montou: getName() é o e-mail do token
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Emprestimo emprestar(

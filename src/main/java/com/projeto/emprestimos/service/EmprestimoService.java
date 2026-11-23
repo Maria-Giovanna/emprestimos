@@ -37,7 +37,6 @@ public class EmprestimoService {
     //METODOS DE CONSULTA
     public List<Emprestimo> listar(Boolean atrasados) {
         if (Boolean.TRUE.equals(atrasados)) {
-            // R8: não devolvidos e com o prazo vencido
             return emprestimoRepository.findByDataDevolucaoIsNullAndDataPrevistaDevolucaoBefore(LocalDate.now());
         }
         return emprestimoRepository.findAll();
@@ -48,7 +47,6 @@ public class EmprestimoService {
         return emprestimoRepository.findByColaboradorId(colaboradorId);
     }
 
-    // "meus empréstimos": os de quem está logado
     public List<Emprestimo> listarDoEmail(String email) {
         Colaborador colaborador = colaboradorService.buscarPorEmail(email);
         return emprestimoRepository.findByColaboradorId(colaborador.getId());
@@ -63,12 +61,12 @@ public class EmprestimoService {
     //METODOS DE AÇÃO
     @Transactional
     public Emprestimo emprestar(Long equipamentoId, String emailLogado) {
-        // primeiro confere se os dois existem (404), antes de mexer em qualquer coisa
+
         Equipamento equipamento = equipamentoService.buscar(equipamentoId);
         Colaborador colaborador = colaboradorService.buscarPorEmail(emailLogado);
         LocalDate hoje = LocalDate.now();
 
-        // R10: quem está atrasado não pega outro
+        //quem está atrasado não pega outro
         boolean temAtrasado = emprestimoRepository.existsByColaboradorIdAndDataDevolucaoIsNullAndDataPrevistaDevolucaoBefore(
                 colaborador.getId(),
                 hoje
@@ -83,8 +81,8 @@ public class EmprestimoService {
             throw new ConflitoException("Você já tem um equipamento emprestado. Devolva antes de pegar outro");
         }
 
-        equipamento.emprestar();                                                 // R4 + fica indisponível (R5)
-        Emprestimo emprestimo = new Emprestimo(equipamento, colaborador, hoje);  // R5: as datas
+        equipamento.emprestar();
+        Emprestimo emprestimo = new Emprestimo(equipamento, colaborador, hoje);
         return emprestimoRepository.save(emprestimo);
     }
 
@@ -99,8 +97,8 @@ public class EmprestimoService {
             throw new AccessDeniedException("Esse empréstimo é de outra pessoa");
         }
 
-        emprestimo.devolver(LocalDate.now());     // R6 + a data da R7
-        emprestimo.getEquipamento().devolver();   // R7: disponível de novo
+        emprestimo.devolver(LocalDate.now());
+        emprestimo.getEquipamento().devolver();
         return emprestimoRepository.save(emprestimo);
     }
 }

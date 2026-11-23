@@ -4,9 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
-// o que a própria pessoa manda na tela "Criar conta".
-// Não tem "perfil" de propósito: quem se cadastra sozinho é sempre COLABORADOR,
-// senão qualquer pessoa poderia se cadastrar como ADMIN
 public record CadastroRequest(
         @NotBlank(message = "O nome é obrigatório")
         String nome,

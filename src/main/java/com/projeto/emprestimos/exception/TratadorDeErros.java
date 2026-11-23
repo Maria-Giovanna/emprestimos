@@ -30,7 +30,7 @@ public class TratadorDeErros {
         return new ErroResposta(mensagem);
     }
 
-    // login com e-mail ou senha errados (slide 54). A mensagem não diz qual dos dois errou, de propósito
+    // login com e-mail ou senha errados
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErroResposta loginInvalido(AuthenticationException ae) {

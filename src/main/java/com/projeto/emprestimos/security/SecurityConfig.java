@@ -33,23 +33,24 @@ public class SecurityConfig {
     //REGRAS
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())   // usa o CorsConfig: sem isso, o navegador toma 401 no "posso?"
+                .cors(Customizer.withDefaults())   // usa o CorsConfig
                 .sessionManagement(sessao -> sessao.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/login",
-                                "/auth/cadastro",   // criar conta: a pessoa ainda não tem token
+                                "/auth/cadastro",
                                 "/error"
                         ).permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/equipamentos", "/equipamentos/*").permitAll() // o catálogo é público
+                        .requestMatchers(HttpMethod.GET, "/equipamentos", "/equipamentos/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/colaboradores", "/colaboradores/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET).authenticated()
-                        .requestMatchers(HttpMethod.POST, "/emprestimos").authenticated()           // emprestar
-                        .requestMatchers(HttpMethod.PUT, "/emprestimos/*/devolucao").authenticated() // devolver
+                        .requestMatchers(HttpMethod.POST, "/emprestimos").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/emprestimos/*/devolucao").authenticated()
                         .anyRequest().hasRole("ADMIN"))
                 .exceptionHandling(erro -> erro.authenticationEntryPoint(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
@@ -61,8 +62,8 @@ public class SecurityConfig {
     public UserDetailsService usuarios(ColaboradorRepository repository) {
         return email -> repository.findByEmail(email)
                 .map(colaborador -> User.withUsername(colaborador.getEmail())
-                        .password(colaborador.getSenha())             // já é o hash BCrypt
-                        .roles(colaborador.getPerfil().name())        // vira ROLE_ADMIN ou ROLE_COLABORADOR
+                        .password(colaborador.getSenha())
+                        .roles(colaborador.getPerfil().name())
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }
@@ -76,6 +77,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
-
 }
