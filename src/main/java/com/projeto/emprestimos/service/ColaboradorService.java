@@ -1,5 +1,6 @@
 package com.projeto.emprestimos.service;
 
+import com.projeto.emprestimos.dto.CadastroRequest;
 import com.projeto.emprestimos.dto.ColaboradorRequest;
 import com.projeto.emprestimos.exception.ConflitoException;
 import com.projeto.emprestimos.exception.NaoEncontradoException;
@@ -58,5 +59,19 @@ public class ColaboradorService {
         colaborador.setPerfil(perfil);
 
         return colaboradorRepository.save(colaborador);
+    }
+
+    // a própria pessoa criando a conta (tela "Criar conta"): o perfil é sempre COLABORADOR.
+    // Monta o mesmo pedido do admin e reaproveita o cadastrar(), com a R3 e o BCrypt
+    public Colaborador criarConta(CadastroRequest pedido){
+        ColaboradorRequest pedidoComPerfil = new ColaboradorRequest(
+                pedido.nome(),
+                pedido.email(),
+                pedido.cargo(),
+                pedido.senha(),
+                Perfil.COLABORADOR
+        );
+
+        return cadastrar(pedidoComPerfil);
     }
 }

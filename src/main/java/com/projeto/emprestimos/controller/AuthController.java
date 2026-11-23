@@ -1,11 +1,13 @@
 package com.projeto.emprestimos.controller;
 
+import com.projeto.emprestimos.dto.CadastroRequest;
 import com.projeto.emprestimos.dto.LoginRequest;
 import com.projeto.emprestimos.dto.TokenResposta;
 import com.projeto.emprestimos.model.Colaborador;
 import com.projeto.emprestimos.security.TokenService;
 import com.projeto.emprestimos.service.ColaboradorService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,6 +48,19 @@ public class AuthController {
         String perfil = perfilComPrefixo.replace("ROLE_", "");
 
         String token = tokenService.gerar(autenticacao.getName(), perfil);
+        return new TokenResposta(token);
+    }
+
+    // criar conta: qualquer pessoa pode, sem token.
+    // Já devolve o token, então a pessoa entra direto, sem fazer login de novo
+    @PostMapping("/cadastro")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TokenResposta cadastro(@RequestBody @Valid CadastroRequest dados) {
+        Colaborador novo = colaboradorService.criarConta(dados);
+
+        String perfil = novo.getPerfil().name();
+        String token = tokenService.gerar(novo.getEmail(), perfil);
+
         return new TokenResposta(token);
     }
 

@@ -39,7 +39,11 @@ public class SecurityConfig {
                 .sessionManagement(sessao -> sessao.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/error").permitAll()
+                        .requestMatchers(
+                                "/auth/login",
+                                "/auth/cadastro",   // criar conta: a pessoa ainda não tem token
+                                "/error"
+                        ).permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/equipamentos", "/equipamentos/*").permitAll() // o catálogo é público
                         .requestMatchers(HttpMethod.GET, "/colaboradores", "/colaboradores/**").hasRole("ADMIN")
