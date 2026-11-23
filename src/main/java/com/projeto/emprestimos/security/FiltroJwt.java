@@ -14,13 +14,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+// o porteiro
 public class FiltroJwt extends OncePerRequestFilter {
+
+    //ATRIBUTOS
     private final TokenService tokenService;
 
+    //CONSTRUTOR
     public FiltroJwt(TokenService tokenService) {
         this.tokenService = tokenService;
     }
 
+    //MÉTODOS
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -28,9 +33,13 @@ public class FiltroJwt extends OncePerRequestFilter {
             FilterChain chain
     ) throws ServletException, IOException {
         String cabecalho = request.getHeader("Authorization");
-        boolean temToken = cabecalho != null && cabecalho.startsWith("Bearer ");
 
-        if (temToken) {
+        // só tenta ler se veio "Bearer " E alguma coisa depois (o "Bearer " sozinho tem 7 letras)
+        boolean temCabecalho = cabecalho != null;
+        boolean comecaComBearer = temCabecalho && cabecalho.startsWith("Bearer ");
+        boolean temAlgoDepoisDoBearer = comecaComBearer && cabecalho.length() > 7;
+
+        if (temAlgoDepoisDoBearer) {
             String token = cabecalho.substring(7);   // corta o "Bearer " e fica só o token
 
             try {
@@ -46,8 +55,11 @@ public class FiltroJwt extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(autenticacao);
-            } catch (JwtException jwte) {}
+            } catch (JwtException | IllegalArgumentException erro) {
+                // token inválido, vencido ou vazio: segue sem login, e o SecurityConfig decide
+            }
         }
+
         chain.doFilter(request, response);
     }
 }
